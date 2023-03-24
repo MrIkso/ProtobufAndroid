@@ -14,10 +14,8 @@ TARGET_API="27"
 PWD="$(pwd)"
 generationDir="$PWD/build"
 mkdir -p "${generationDir}"
-cd "${generationDir}"
 
-cmake \
-  -DCMAKE_GENERATOR=Ninja \
+cmake -GNinja -B "$generationDir" \
   -DANDROID_NDK="$ANDROID_NDK" \
   -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
   -DANDROID_ABI="$TARGET_ABI" \
@@ -26,8 +24,10 @@ cmake \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCFLAGS="-fPIE -fPIC" \
   -DLDFLAGS="-llog -lz -lc++_static" \
-  -DANDROID_STL="c++_static" \ 
-  ../..
-cmake --build .
+  -DANDROID_STL="c++_static" 
+  
+#cmake --build .
+ninja -C "$generationDir" "-j$(nproc)" || exit 1
+
 cd "${generationDir}"
 cmake -DCMAKE_INSTALL_PREFIX="$PWD/protobuff_install" -P cmake_install.cmake
