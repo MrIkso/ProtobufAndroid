@@ -2,19 +2,17 @@ name: Build protobuf
 
 on:
   push:
-    branches:
-      - main
+  pull_request:
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Reason'     
-        required: false
-        default: 'Update package'
 
 jobs:
   build:
     name: build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target_abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
+      fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -24,9 +22,8 @@ jobs:
       - name: Prerequisites
         run: |
           sudo apt install \
-          make \
-          autogen \
-          autoconf \
+          cmake \
+          ninja-build \
           -y
 
       - uses: nttld/setup-ndk@v1
@@ -34,12 +31,12 @@ jobs:
         with:
           ndk-version: r25b
           add-to-path: false
-      - run: bash build.sh
+      - run: bash build.sh ${{ matrix.target_abi }}
         env:
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: protobuf-aarch64
-          path: google/protobuf/arm64_build
+          name: protobuf-${{ matrix.target_abi }}
+          path: protobuff/protobuff_install

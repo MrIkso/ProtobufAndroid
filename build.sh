@@ -5,36 +5,27 @@ if [[ -z "$ANDROID_NDK" ]]; then
   exit 1
 fi
 
-cd $ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64/bin
-ln -s aarch64-linux-android27-clang++ aarch64-linux-android-clang++
-ln -s aarch64-linux-android27-clang aarch64-linux-android-clang
-
-mkdir $HOME/google
-cd $HOME/google
-
 git clone https://github.com/google/protobuf.git
 cd protobuf
-./autogen.sh
+git submodule update --init --recursive
 
-mkdir x86_build
-cd x86_build
-../configure --prefix=$HOME/google/x86_pb_install
-make install -j16
-cd ..
+TARGET_ABI="$1"
+TARGET_API="27"
+PWD="$(pwd)"
+generationDir="$PWD/build"
+mkdir -p "${generationDir}"
 
-mkdir arm64_build
-cd arm64_build
+cmake -GNinja -B "$PWD/build" \
+  -DANDROID_NDK="$ANDROID_NDK" \
+  -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
+  -DANDROID_ABI="$TARGET_ABI" \
+  -DANDROID_NATIVE_API_LEVEL="$TARGET_API" \
+  -DCMAKE_SYSTEM_NAME="Android" \
+  -DCMAKE_BUILD_TYPE="Release" \
+  -DCFLAGS="-fPIE -fPIC" \
+  -DLDFLAGS="-llog -lz -lc++_static" \
+  -DANDROID_STL="c++_static" || exit 1
 
-CC=aarch64-linux-android-clang \
-CXX=aarch64-linux-android-clang++ \
-CFLAGS="-fPIE -fPIC" \
-LDFLAGS="-llog -lz -lc++_static" \
-../configure --host=aarch64-linux-android \
---prefix=$HOME/google/arm64_pb_install \
---enable-cross-compile \
---with-protoc=$HOME/google/x86_pb_install/bin/protoc
-
-make install -j16
-
-pwd
-cd ..
+cmake  --build .
+cd "${generationDir}"
+cmake  -DCMAKE_INSTALL_PREFIX="$PWD/protobuff_install" -P cmake_install.cmake
