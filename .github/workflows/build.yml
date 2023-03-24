@@ -40,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: protobuf-${{ matrix.target_abi }}
-          path: protobuf/build/bin
+          path: protobuf/build/protoc
