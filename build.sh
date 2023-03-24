@@ -5,9 +5,7 @@ if [[ -z "$ANDROID_NDK" ]]; then
   exit 1
 fi
 
-git clone https://github.com/google/protobuf.git
 cd protobuf
-git submodule update --init --recursive
 
 NDK_TOOLCHAIN="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64"
 STRIP="$NDK_TOOLCHAIN/bin/llvm-strip"
