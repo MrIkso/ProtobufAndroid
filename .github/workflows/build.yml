@@ -39,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: protobuf-${{ matrix.target_abi }}
-          path: protobuf/build/protobuff_install
+          path: protobuf/build/protobuff_install\bin
