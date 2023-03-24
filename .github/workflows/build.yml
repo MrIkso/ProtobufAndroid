@@ -3,7 +3,7 @@ name: Build protobuf
 on:
   push:
   pull_request:
-  workflow_dispatch:
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -11,14 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target_abi: [arm64-v8a, armeabi-v7a, x86_64, x86]
+        target_abi:
+          - arm64-v8a
+          - armeabi-v7a
+          - x86_64
+          - x86
       fail-fast: false
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           submodules: 'false'
-
       - name: Prerequisites
         run: |
           sudo apt install \
@@ -27,31 +30,34 @@ jobs:
           curl \
           pcregrep \
           -y
-
       - name: Setup cleaner
-        run: |
-            cleaner_version=v2.1.1
-            curl -L https://github.com/termux/termux-elf-cleaner/releases/download/${cleaner_version}/termux-elf-cleaner > /usr/local/bin/termux-elf-cleaner
-            chmod +x /usr/local/bin/termux-elf-cleaner
-        
+        run: >
+          cleaner_version=v2.1.1
+
+          curl -L
+          https://github.com/termux/termux-elf-cleaner/releases/download/${cleaner_version}/termux-elf-cleaner
+          > /usr/local/bin/termux-elf-cleaner
+
+          chmod +x /usr/local/bin/termux-elf-cleaner
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:
           ndk-version: r25b
           add-to-path: false
-      - run: bash build.sh ${{ matrix.target_abi }}
+      - run: 'bash build.sh ${{ matrix.target_abi }}'
         env:
-          ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
-          
+          ANDROID_NDK: '${{ steps.setup-ndk.outputs.ndk-path }}'
       - name: Extract protoc version
-       id: envvars
-       run : |
-             eho "PROTOC_VERSION=pcregrep -o1 'PROTOC_VERSION = "([\S]+)"' protobuf/protobuf_version.bzl" >> $GITHUB_OUTPUT
-       env:
-        PROTOC_VERSION: ""
-        
+        id: envvars
+        run: |
+          eho "PROTOC_VERSION=pcregrep -o1 'PROTOC_VERSION = "([\S]+)"'
+          protobuf/protobuf_version.bzl" >> $GITHUB_OUTPUT
+        env:
+          PROTOC_VERSION: ''
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: protoc-"${{ steps.envvars.outputs.PROTOC_VERSION }}"-android-${{ matrix.target_abi }}
+          name:
+            protoc-"${{ steps.envvars.outputs.PROTOC_VERSION }}"-android-${{
+            matrix.target_abi }}
           path: protobuf/build/protoc
