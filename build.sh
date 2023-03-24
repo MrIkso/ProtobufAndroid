@@ -24,7 +24,8 @@ cmake -GNinja -B "$PWD/build" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCFLAGS="-fPIE -fPIC" \
   -DLDFLAGS="-llog -lz -lc++_static" \
-  -DANDROID_STL="c++_static" || exit 1
+  -DANDROID_STL="c++_static" \ 
+  ../.. || exit 1
 
 cmake  --build .
 cd "${generationDir}"
