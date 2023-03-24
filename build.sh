@@ -14,8 +14,9 @@ TARGET_API="27"
 PWD="$(pwd)"
 generationDir="$PWD/build"
 mkdir -p "${generationDir}"
+cd "${generationDir}"
 
-cmake -GNinja -B "$PWD/build" \
+cmake -GNinja \
   -DANDROID_NDK="$ANDROID_NDK" \
   -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
   -DANDROID_ABI="$TARGET_ABI" \
