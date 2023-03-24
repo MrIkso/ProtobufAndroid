@@ -27,6 +27,12 @@ jobs:
           tree \
           -y
 
+      - name: Setup cleaner
+        run: |
+            cleaner_version=v2.1.1
+            curl -L https://github.com/termux/termux-elf-cleaner/releases/download/${cleaner_version}/termux-elf-cleaner > /usr/local/bin/termux-elf-cleaner
+            chmod +x /usr/local/bin/termux-elf-cleaner
+        
       - uses: nttld/setup-ndk@v1
         id: setup-ndk
         with:

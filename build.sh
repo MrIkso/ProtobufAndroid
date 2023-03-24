@@ -9,6 +9,10 @@ git clone https://github.com/google/protobuf.git
 cd protobuf
 git submodule update --init --recursive
 
+NDK_TOOLCHAIN="$ANDROID_NDK/toolchains/llvm/prebuilt/linux-x86_64"
+STRIP="$NDK_TOOLCHAIN/bin/llvm-strip"
+CLEAN=termux-elf-cleaner
+
 TARGET_ABI="$1"
 TARGET_API="27"
 PWD="$(pwd)"
@@ -27,12 +31,15 @@ cmake -GNinja -B "$generationDir" \
   -DANDROID_STL="c++_static" \
   -Dprotobuf_BUILD_TESTS=OFF \
   -Dprotobuf_INSTALL=ON \
-  -DCMAKE_INSTALL_PREFIX="$generationDir/protobuff_install"
   
 #cmake --build .
 ninja -C "$generationDir" "-j$(nproc)" || exit 1
 
-cd "${generationDir}"
-cmake -DCMAKE_INSTALL_PREFIX="$generationDir/protobuff_install" -P cmake_install.cmake
+#cd "${generationDir}"
+#cmake -DCMAKE_INSTALL_PREFIX="$generationDir/protobuff_install" -P cmake_install.cmake
 
-tree "$generationDir"
+#tree "$generationDir"
+
+protoc="$generationDir/protoc"
+$STRIP --strip-all "$protoc" || exit 1
+$CLEAN --api-level "$TARGET_API" "$protoc" || exit 1
