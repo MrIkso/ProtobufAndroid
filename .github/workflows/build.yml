@@ -23,11 +23,9 @@ jobs:
         with:
           submodules: 'false'
 
-      - name: Checkout protobuf repo
-        uses: actions/checkout@v3
-        with:
-          name: protocolbuffers/protobuf
-          submodules: recursive
+      - name: Clone protobuf repo
+        run: |
+            git clone --recurse-submodules https://github.com/google/protobuf.git
 
       - name: Prerequisites
         run: |
