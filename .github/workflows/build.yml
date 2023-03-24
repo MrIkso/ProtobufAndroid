@@ -24,7 +24,8 @@ jobs:
           sudo apt install \
           cmake \
           ninja-build \
-          tree \
+          curl \
+          pcregrep \
           -y
 
       - name: Setup cleaner
@@ -41,9 +42,16 @@ jobs:
       - run: bash build.sh ${{ matrix.target_abi }}
         env:
           ANDROID_NDK: ${{ steps.setup-ndk.outputs.ndk-path }}
-
+          
+      - name: Extract protoc version
+       id: envvars
+       run : |
+             eho "PROTOC_VERSION=pcregrep -o1 'PROTOC_VERSION = "([\S]+)"' protobuf/protobuf_version.bzl" >> $GITHUB_OUTPUT
+       env:
+        PROTOC_VERSION: ""
+        
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: protobuf-${{ matrix.target_abi }}
+          name: protoc-"${{ steps.envvars.outputs.PROTOC_VERSION }}"-android-${{ matrix.target_abi }}
           path: protobuf/build/protoc
