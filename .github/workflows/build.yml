@@ -50,7 +50,7 @@ jobs:
       - name: Extract protoc version
         id: envvars
         run: |
-          echo "PROTOC_VERSION=pcregrep -o1 'PROTOC_VERSION = "([\S]+)"' protobuf/protobuf_version.bzl" >> $GITHUB_OUTPUT
+          echo "PROTOC_VERSION=$(pcregrep -o1 'PROTOC_VERSION = "([\S]+)"' protobuf/protobuf_version.bzl)" >> $GITHUB_OUTPUT
         env:
           PROTOC_VERSION: ''
       - name: Upload artifacts
