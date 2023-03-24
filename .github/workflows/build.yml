@@ -24,6 +24,7 @@ jobs:
           sudo apt install \
           cmake \
           ninja-build \
+          tree \
           -y
 
       - uses: nttld/setup-ndk@v1
@@ -39,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: protobuf-${{ matrix.target_abi }}
-          path: protobuf/build/protobuff_install\bin
+          path: protobuf/build/bin

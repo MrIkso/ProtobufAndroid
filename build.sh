@@ -26,7 +26,10 @@ cmake -GNinja -B "$generationDir" \
   -DLDFLAGS="-llog -lz -lc++_static" \
   -DANDROID_STL="c++_static" \
   -Dprotobuf_BUILD_TESTS=OFF \
-  -DCMAKE_INSTALL_PREFIX="$PWD/protobuff_install"
+  -Dprotobuf_INSTALL=ON \
+  -DCMAKE_INSTALL_PREFIX="$generationDir/protobuff_install"
   
 #cmake --build .
 ninja -C "$generationDir" "-j$(nproc)" || exit 1
+
+tree "$generationDir"
