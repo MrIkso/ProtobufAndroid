@@ -24,7 +24,8 @@ cmake -GNinja -B "$generationDir" \
   -DCMAKE_BUILD_TYPE="Release" \
   -DCFLAGS="-fPIE -fPIC" \
   -DLDFLAGS="-llog -lz -lc++_static" \
-  -DANDROID_STL="c++_static" 
+  -DANDROID_STL="c++_static" \
+  -Dprotobuf_BUILD_TESTS=OFF
   
 #cmake --build .
 ninja -C "$generationDir" "-j$(nproc)" || exit 1
